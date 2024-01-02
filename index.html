@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ToDo List</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+    }
+
+    .container {
+      width: 90%;
+      margin: 20px auto 0;
+      display: flex;
+      justify-content: center;
+      max-height: 93vh;
+
+      
+    }
+
+    .todo-application {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+      overflow: auto;
+      scroll-behavior: smooth;
+      scrollbar-width: thin;
+
+    }
+
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    .todo-main {
+      display: flex;
+      gap: 10px;
+    }
+
+    input[type="text"] {
+      flex: 1;
+      padding: 8px;
+      font-size: 16px;
+    }
+
+    button {
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      padding: 10px;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    .list-container {
+      margin-top: 20px;
+    }
+
+    .list {
+      list-style: none;
+      padding: 0;
+    }
+
+    li {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background-color: #fff;
+      border: 1px solid #ddd;
+      margin-bottom: 8px;
+      padding: 10px;
+      border-radius: 4px;
+      box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+    }
+
+    li span {
+      flex: 1;
+      margin-right: 10px;
+      text-transform: uppercase;
+    }
+
+    li button {
+      background-color: #e74c3c;
+      margin-right: 5px;
+    }
+
+    li button:hover {
+      background-color: #c0392b;
+    }
+    .mark{
+      text-decoration: line-through;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="todo-application">
+      <h1>ToDo List</h1>
+      <div class="todo">
+        <div class="todo-main">
+          <input type="text" placeholder="add your task" id="input">
+          <button onclick="addtask()">Add Task</button>
+        </div>
+        <!-- task list container  -->
+        <div class="list-container">
+
+          <ul class="list" id="list">
+          
+          
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const todoTask = document.getElementById("input");
+    const listItem = document.getElementById("list");
+    const lisTask = JSON.parse(localStorage.getItem("list")) || []; 
+    let isEditing = false;
+    let editingIndex = null;
+
+    // first  loadpage data display 
+    displayData(lisTask);
+    function addtask() {
+  if (isEditing) {
+    lisTask[editingIndex] = todoTask.value;
+    displayData(lisTask);
+    saveLocalStorage();
+    todoTask.value = "";
+    isEditing = false;
+  } else {
+    let text = todoTask.value;
+    if (text !== "") {
+      lisTask.push(text);
+      displayData(lisTask);
+      saveLocalStorage();
+      todoTask.value = "";
+    }
+  }
+}
+
+
+    function displayData(arr){
+      listItem.innerHTML = "";
+      arr.forEach((elm , i)=>{
+        listItem.innerHTML += ` 
+             <li>
+              <span>${elm}</span>
+              <button onclick="remove(${i})">Remove Task</button>
+              <button onclick="edit(${i})">Edit Task</button>
+              <button onclick="mark(this)">Mark Task</button>
+            </li>`;
+      } )
+    };
+
+
+    // remove the select task 
+
+    function remove(id){
+      lisTask.splice(id , 1);
+      displayData(lisTask);
+      saveLocalStorage();
+    }
+// edit the current selectd task 
+   
+
+function edit(id) {
+  let curTask = lisTask[id];
+  todoTask.value = curTask;
+  isEditing = true;
+  editingIndex = id;
+}
+
+function mark(button) {
+  const spanElement = button.parentElement.querySelector('span');
+  spanElement.classList.toggle("mark");
+}
+
+    // save list intoLocal storagr 
+function saveLocalStorage(){
+  localStorage.setItem("list" , JSON.stringify(lisTask));
+}
+
+  </script>
+</body>
+</html>
